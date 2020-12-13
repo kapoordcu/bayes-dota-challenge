@@ -10,9 +10,9 @@ import javax.persistence.*;
 @Data
 public class HeroKills {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private Long id;
+    private Long killId;
     private String hero;
     @Column(name = "kills")
     private int kills;
@@ -20,8 +20,8 @@ public class HeroKills {
     @Column(name = "matchId")
     private Long matchId;
 
-    public Long getId() {
-        return id;
+    public Long getKillId() {
+        return killId;
     }
 
     public String getHero() {

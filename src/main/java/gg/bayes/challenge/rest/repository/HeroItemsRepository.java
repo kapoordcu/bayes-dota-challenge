@@ -9,8 +9,6 @@ import java.util.List;
 
 @Repository
 public interface HeroItemsRepository extends JpaRepository<HeroItems, Long> {
-    @Query("SELECT a FROM HeroItems a " +
-            " WHERE a.matchId=:matchId " +
-            "    AND a.hero=:heroName")
+    @Query("SELECT a FROM HeroItems a  WHERE a.matchId=:matchId AND a.hero=:heroName")
     List<HeroItems> findByMatchIdAAndHero(Long matchId, String heroName);
 }

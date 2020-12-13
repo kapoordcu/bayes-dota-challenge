@@ -1,6 +1,5 @@
 package gg.bayes.challenge.rest.repository;
 
-import gg.bayes.challenge.rest.model.HeroItems;
 import gg.bayes.challenge.rest.model.HeroKills;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

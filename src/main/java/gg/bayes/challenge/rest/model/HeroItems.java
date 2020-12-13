@@ -3,20 +3,22 @@ package gg.bayes.challenge.rest.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "heroitems")
 @Data
 public class HeroItems {
     @Id
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long itemId;
+
     @Column(name = "item")
     private String item;
     @Column(name = "timestamp")
     private Long timestamp;
+
     @JsonIgnore
     @Column(name = "matchId")
     private Long matchId;
@@ -36,6 +38,10 @@ public class HeroItems {
 
     public void setMatchId(Long matchId) {
         this.matchId = matchId;
+    }
+
+    public Long getItemId() {
+        return itemId;
     }
 
     public String getHero() {
