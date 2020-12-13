@@ -17,38 +17,14 @@ public class HeroKills {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long killId;
+
+    @Column(name = "hero")
     private String hero;
+
     @Column(name = "kills")
     private int kills;
+
     @JsonIgnore
     @Column(name = "matchId")
     private Long matchId;
-
-    public Long getKillId() {
-        return killId;
-    }
-
-    public String getHero() {
-        return hero;
-    }
-
-    public int getKills() {
-        return kills;
-    }
-
-    public Long getMatchId() {
-        return matchId;
-    }
-
-    public void setHero(String hero) {
-        this.hero = hero;
-    }
-
-    public void setKills(int kills) {
-        this.kills = kills;
-    }
-
-    public void setMatchId(Long matchId) {
-        this.matchId = matchId;
-    }
 }

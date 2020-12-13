@@ -1,9 +1,11 @@
 package gg.bayes.challenge.service.impl;
 
 import gg.bayes.challenge.rest.aggregate.CombatLogAggregator;
+import gg.bayes.challenge.rest.model.HeroDamage;
 import gg.bayes.challenge.rest.model.HeroItems;
 import gg.bayes.challenge.rest.model.HeroKills;
 import gg.bayes.challenge.rest.model.HeroSpells;
+import gg.bayes.challenge.rest.repository.HeroDamageRepository;
 import gg.bayes.challenge.rest.repository.HeroItemsRepository;
 import gg.bayes.challenge.rest.repository.HeroKillsRepository;
 import gg.bayes.challenge.rest.repository.HeroSpellsRepository;
@@ -20,13 +22,16 @@ public class MatchServiceImpl implements MatchService {
     private final HeroKillsRepository killsRepository;
     private final HeroItemsRepository itemsRepository;
     private final HeroSpellsRepository heroSpellsRepository;
+    private final HeroDamageRepository heroDamageRepository;
 
     public MatchServiceImpl(CombatLogAggregator combatLogAggregator, HeroKillsRepository killsRepository,
-                            HeroItemsRepository itemsRepository, HeroSpellsRepository heroSpellsRepository) {
+                            HeroItemsRepository itemsRepository, HeroSpellsRepository heroSpellsRepository,
+                            HeroDamageRepository heroDamageRepository) {
         this.combatLogAggregator = combatLogAggregator;
         this.killsRepository = killsRepository;
         this.itemsRepository = itemsRepository;
         this.heroSpellsRepository = heroSpellsRepository;
+        this.heroDamageRepository = heroDamageRepository;
     }
 
     @Override
@@ -36,6 +41,7 @@ public class MatchServiceImpl implements MatchService {
         itemsRepository.saveAll(combatLogAggregator.getItemsList());
         killsRepository.saveAll(combatLogAggregator.getWinnersList());
         heroSpellsRepository.saveAll(combatLogAggregator.getSpellList());
+        heroDamageRepository.saveAll(combatLogAggregator.getDamageList());
         return matchId;
     }
 
@@ -52,5 +58,10 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public List<HeroSpells> findSpellsByMatchIdAAndHero(Long matchId, String heroName) {
         return heroSpellsRepository.findByMatchIdAAndHero(matchId, heroName);
+    }
+
+    @Override
+    public List<HeroDamage> findDamageByMatchIdAAndHero(Long matchId, String heroName) {
+        return heroDamageRepository.findByMatchIdAAndHero(matchId, heroName);
     }
 }

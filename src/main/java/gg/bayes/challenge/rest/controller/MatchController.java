@@ -6,7 +6,6 @@ import gg.bayes.challenge.rest.model.HeroKills;
 import gg.bayes.challenge.rest.model.HeroSpells;
 import gg.bayes.challenge.service.MatchService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +58,6 @@ public class MatchController {
     public ResponseEntity<List<HeroDamage>> getDamage(@PathVariable("matchId") Long matchId,
                                                       @PathVariable("heroName") String heroName) {
         // TODO use match service to retrieve stats
-        throw new NotImplementedException("should be implemented by the applicant");
+        return ResponseEntity.ok(matchService.findDamageByMatchIdAAndHero(matchId, heroName));
     }
 }

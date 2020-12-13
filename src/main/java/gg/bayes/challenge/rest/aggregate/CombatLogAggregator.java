@@ -1,10 +1,7 @@
 package gg.bayes.challenge.rest.aggregate;
 
 import gg.bayes.challenge.config.PropertyConfig;
-import gg.bayes.challenge.rest.model.HeroItems;
-import gg.bayes.challenge.rest.model.HeroKills;
-import gg.bayes.challenge.rest.model.HeroSpells;
-import gg.bayes.challenge.rest.model.MatchEnum;
+import gg.bayes.challenge.rest.model.*;
 import gg.bayes.challenge.service.exception.DataParseException;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -42,6 +39,7 @@ public class CombatLogAggregator {
     private List<HeroItems> itemsList = new ArrayList<>();
     private List<HeroKills> winnersList = new ArrayList<>();
     private List<HeroSpells> spellList = new ArrayList<>();
+    private List<HeroDamage> damageList = new ArrayList<>();
 
     private Pattern regexSqBrackets = Pattern.compile("\\[(.*?)\\]");
 
@@ -81,10 +79,26 @@ public class CombatLogAggregator {
     }
 
     private void aggregateDamageDone(String event, Long matchId) {
-        //[00:20:08.093] npc_dota_hero_rubick hits npc_dota_hero_dragon_knight with dota_unknown for 23 damage (1699->1676)
-        // Not implemented because of time limit of 2 hours
+        try {
+            String[] recordKeys = event.split("\\s+");
+            if(recordKeys.length > 4) {
+                String heroName = retrieveHeroNameFromPrefix(recordKeys[1]);
+                String target = retrieveHeroNameFromPrefix(recordKeys[3]);
+                Matcher matcher = Pattern.compile("(?<=for\\s).*(?=\\sdamage)").matcher(event);
+                HeroDamage damage = new HeroDamage();
+                damage.setTarget(target);
+                damage.setHero(heroName);
+                damage.setMatchId(matchId);
+                damage.setDamageInstances(1);
+                if(matcher.find()) {
+                    damage.setTotalDamage(Integer.valueOf(matcher.group().trim()));
+                }
+                damageList.add(damage);
+            }
+        } catch (Exception exception) {
+            LOG.debug("Cast Spelling event is not in expected format: " + event);
+        }
     }
-
 
     /**
      * Spells being cast
@@ -185,18 +199,6 @@ public class CombatLogAggregator {
             LOG.warn(timeStamp + ": The timestamp could not be parsed to Long value");
         }
         return System.currentTimeMillis();
-    }
-
-    public List<HeroItems> getItemsList() {
-        return itemsList;
-    }
-
-    public List<HeroKills> getWinnersList() {
-        return winnersList;
-    }
-
-    public List<HeroSpells> getSpellList() {
-        return spellList;
     }
 }
 
