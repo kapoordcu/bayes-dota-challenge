@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -42,14 +41,14 @@ public class MatchController {
     @GetMapping("{matchId}/{heroName}/items")
     public ResponseEntity<List<HeroItems>> getItems(@PathVariable("matchId") Long matchId,
                                                     @PathVariable("heroName") String heroName) {
-        return ResponseEntity.ok(matchService.findByMatchIdAAndHero(matchId, heroName));
+        return ResponseEntity.ok(matchService.findItemsByMatchIdAAndHero(matchId, heroName));
     }
 
     @GetMapping("{matchId}/{heroName}/spells")
     public ResponseEntity<List<HeroSpells>> getSpells(@PathVariable("matchId") Long matchId,
                                                       @PathVariable("heroName") String heroName) {
         // TODO use match service to retrieve stats
-        throw new NotImplementedException("should be implemented by the applicant");
+        return ResponseEntity.ok(matchService.findSpellsByMatchIdAAndHero(matchId, heroName));
     }
 
     @GetMapping("{matchId}/{heroName}/damage")

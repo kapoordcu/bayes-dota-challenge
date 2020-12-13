@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public enum MatchEnum {
     UNKNOWN(-1, "UNKNOWN"),
-    CASTS(1000, "casts ability"),
+    CASTS(1000, "casts"),
     BUYS(1001, "buys"),
     USES(1002, "uses"),
     HITS(1003, "hits"),

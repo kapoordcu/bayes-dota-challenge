@@ -23,6 +23,7 @@ public class HeroItems {
     @Column(name = "matchId")
     private Long matchId;
     @JsonIgnore
+    @Column(name = "hero")
     private String hero;
     public void setHero(String hero) {
         this.hero = hero;

@@ -2,6 +2,7 @@ package gg.bayes.challenge.service;
 
 import gg.bayes.challenge.rest.model.HeroItems;
 import gg.bayes.challenge.rest.model.HeroKills;
+import gg.bayes.challenge.rest.model.HeroSpells;
 
 import java.util.List;
 
@@ -10,5 +11,7 @@ public interface MatchService {
 
     List<HeroKills> findByMatchId(Long matchId);
 
-    List<HeroItems> findByMatchIdAAndHero(Long matchId, String heroName);
+    List<HeroItems> findItemsByMatchIdAAndHero(Long matchId, String heroName);
+
+    List<HeroSpells> findSpellsByMatchIdAAndHero(Long matchId, String heroName);
 }
