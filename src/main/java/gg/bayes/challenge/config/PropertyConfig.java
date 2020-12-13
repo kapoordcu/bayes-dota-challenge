@@ -15,11 +15,18 @@ public class PropertyConfig {
     @Value("${spring.props.item-prefix: item_}")
     private String itemPrefix;
 
+    @Value("${spring.props.date-format: yyyy-MM-dd HH:mm:ss.SSS}")
+    private String dateFormat;
+
     public List<String> getHeroPrefix() {
         return heroPrefix;
     }
 
     public String getItemPrefix() {
         return itemPrefix;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
     }
 }

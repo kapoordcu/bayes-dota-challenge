@@ -14,7 +14,13 @@ import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,7 +33,7 @@ public class CombatLogAggregator {
 
     public CombatLogAggregator(PropertyConfig config) {
         this.config = config;
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        dateFormat = new SimpleDateFormat(config.getDateFormat());
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -64,11 +70,13 @@ public class CombatLogAggregator {
         if(EnumSet.of(MatchEnum.BUYS).contains(eventType)) {
             aggItemsBeingPurchased(event, matchId);
         } else if(EnumSet.of(MatchEnum.KILLED).contains(eventType)) {
-            aggregateWinnersByHeroes(event, matchId);
+            aggregateWinnersByHeroes(event);
         }  else if(EnumSet.of(MatchEnum.CASTS).contains(eventType)) {
             aggregateCastSpell(event, matchId);
         }  else if(EnumSet.of(MatchEnum.HITS).contains(eventType)) {
             aggregateDamageDone(event, matchId);
+        } else if(EnumSet.of(MatchEnum.UNKNOWN).contains(eventType)) {
+            LOG.warn("This event type is supported in future modifications");
         }
     }
 
@@ -77,20 +85,30 @@ public class CombatLogAggregator {
         // Not implemented because of time limit of 2 hours
     }
 
+
+    /**
+     * Spells being cast
+     *
+     * @param event
+     * @param matchId
+     */
     private void aggregateCastSpell(String event, Long matchId) {
-        //[00:19:19.038] npc_dota_hero_pangolier casts ability pangolier_swashbuckle (lvl 1) on dota_unknown
-        String[] recordKeys = event.split("\\s+");
-        if(recordKeys.length > 4) {
-            String target = recordKeys[recordKeys.length-1];
-            String heroName = retrieveHeroNameFromPrefix(recordKeys[1]);
-            String spellAbility = recordKeys[4];
-            HeroSpells spell = new HeroSpells();
-            spell.setTarget(target);
-            spell.setHero(heroName);
-            spell.setMatchId(matchId);
-            spell.setSpell(spellAbility);
-            spell.setCasts(extractLevelOfCast(event));
-            spellList.add(spell);
+        try {
+            String[] recordKeys = event.split("\\s+");
+            if(recordKeys.length > 4) {
+                String target = recordKeys[recordKeys.length-1];
+                String heroName = retrieveHeroNameFromPrefix(recordKeys[1]);
+                String spellAbility = recordKeys[4];
+                HeroSpells spell = new HeroSpells();
+                spell.setTarget(target);
+                spell.setHero(heroName);
+                spell.setMatchId(matchId);
+                spell.setSpell(spellAbility);
+                spell.setCasts(extractLevelOfCast(event));
+                spellList.add(spell);
+            }
+        } catch (Exception exception) {
+            LOG.debug("Cast Spelling event is not in expected format: " + event);
         }
     }
 
@@ -107,30 +125,43 @@ public class CombatLogAggregator {
 
     /**
      * Items being purchased
+     *
+     * @param event
+     * @param matchId
      */
     private void aggItemsBeingPurchased(String event, Long matchId) {
-        String[] recordKeys = event.split("\\s+");
-        if(recordKeys.length > 1) {
-            String itemName = recordKeys[recordKeys.length-1].replace(config.getItemPrefix(), "");;
-            String heroName = retrieveHeroNameFromPrefix(recordKeys[1]);
-            String timeStamp = recordKeys[0];
-            HeroItems item = new HeroItems();
-            item.setItem(itemName);
-            item.setHero(heroName);
-            item.setMatchId(matchId);
-            item.setTimestamp(extractTimeStampIntoLong(timeStamp));
-            itemsList.add(item);
+        try {
+            String[] recordKeys = event.split("\\s+");
+            if(recordKeys.length > 1) {
+                String itemName = recordKeys[recordKeys.length-1].replace(config.getItemPrefix(), "");;
+                String heroName = retrieveHeroNameFromPrefix(recordKeys[1]);
+                String timeStamp = recordKeys[0];
+                HeroItems item = new HeroItems();
+                item.setItem(itemName);
+                item.setHero(heroName);
+                item.setMatchId(matchId);
+                item.setTimestamp(extractTimeStampIntoLong(timeStamp));
+                itemsList.add(item);
+            }
+        } catch (Exception exception) {
+            LOG.debug("Purchase event is not in expected format: " + event);
         }
     }
 
     /**
      * Heroes killing each other
+     *
+     * @param event
      */
-    private void aggregateWinnersByHeroes(String record, Long matchId) {
-        String[] recordKeys = record.split("\\s+");
-        if(recordKeys.length > 0) {
-            String heroName = retrieveHeroNameFromPrefix(recordKeys[recordKeys.length-1]);
-            winnersByKillCount.merge(heroName, 1, Integer::sum);
+    private void aggregateWinnersByHeroes(String event) {
+        try {
+            String[] recordKeys = event.split("\\s+");
+            if(recordKeys.length > 0) {
+                String heroName = retrieveHeroNameFromPrefix(recordKeys[recordKeys.length-1]);
+                winnersByKillCount.merge(heroName, 1, Integer::sum);
+            }
+        } catch (Exception exception) {
+            LOG.debug("Killing event is not in expected format: " + event);
         }
     }
 

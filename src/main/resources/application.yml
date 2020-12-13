@@ -36,5 +36,6 @@ spring:
   props:
     hero-prefix: npc_dota_hero_, npc_dota_
     item-prefix: item_
+    date-format: yyyy-MM-dd HH:mm:ss.SSS
 
 logging.config: classpath:logback-${ENV:development}.xml
